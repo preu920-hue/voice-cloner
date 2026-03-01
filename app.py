@@ -98,8 +98,7 @@ try:
         return root_path
 
     backbone_arg = _resolve_hf_snapshot(local_backbone) if os.path.isdir(local_backbone) else "neutts-air-q4-gguf"
-
-    print(f"Using backbone: {backbone_arg}")
+cd
     print(f"Using codec: neuphonic/neucodec")
 
     # For 4GB GPUs, load codec on CPU to save GPU memory
@@ -950,16 +949,25 @@ with gr.Blocks(
 if __name__ == "__main__":
     import socket
 
-    def find_free_port(start=7860, end=7900):
-        for port in range(start, end):
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                try:
-                    s.bind(("localhost", port))
-                    return port
-                except OSError:
-                    continue
-        return start  # fallback
+    # Use PORT from environment (e.g. Render) or find a free port locally
+    port = os.environ.get("PORT")
+    if port is not None:
+        port = int(port)
+        server_name = "0.0.0.0"  # required for cloud hosts
+        inbrowser = False
+    else:
+        def find_free_port(start=7860, end=7900):
+            for p in range(start, end):
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    try:
+                        s.bind(("localhost", p))
+                        return p
+                    except OSError:
+                        continue
+            return start  # fallback
+        port = find_free_port()
+        server_name = "localhost"
+        inbrowser = True
 
-    port = find_free_port()
-    print(f"\nLaunching on http://localhost:{port}")
-    app.launch(server_name="localhost", server_port=port, share=False, inbrowser=True, show_error=True, show_api=False)
+    print(f"\nLaunching on http://{server_name}:{port}")
+    app.launch(server_name=server_name, server_port=port, share=False, inbrowser=inbrowser, show_error=True, show_api=False)
