@@ -950,16 +950,25 @@ with gr.Blocks(
 if __name__ == "__main__":
     import socket
 
-    def find_free_port(start=7860, end=7900):
-        for port in range(start, end):
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                try:
-                    s.bind(("localhost", port))
-                    return port
-                except OSError:
-                    continue
-        return start  # fallback
+    # Render (and similar hosts) set PORT; default 10000 per Render docs
+    port_str = os.environ.get("PORT")
+    if port_str is not None:
+        port = int(port_str)
+        server_name = "0.0.0.0"
+        inbrowser = False
+    else:
+        def find_free_port(start=7860, end=7900):
+            for p in range(start, end):
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    try:
+                        s.bind(("localhost", p))
+                        return p
+                    except OSError:
+                        continue
+            return start
+        port = find_free_port()
+        server_name = "localhost"
+        inbrowser = True
 
-    port = find_free_port()
-    print(f"\nLaunching on http://localhost:{port}")
-    app.launch(server_name="localhost", server_port=port, share=False, inbrowser=True, show_error=True, show_api=False)
+    print(f"\nLaunching on http://{server_name}:{port}")
+    app.launch(server_name=server_name, server_port=port, share=False, inbrowser=inbrowser, show_error=True, show_api=False)
