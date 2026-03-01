@@ -216,5 +216,6 @@ __marimo__/
 Models/
 samples/
 temp_output.wav
+temp*.wav
 .hf_cache/
 *.msi
