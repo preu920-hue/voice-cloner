@@ -1,220 +1,368 @@
-# NeuTTS Air ☁️
+# Virtual Lab Voice Cloning - Documentation
 
-HuggingFace 🤗: [Model](https://huggingface.co/neuphonic/neutts-air), [Q8 GGUF](https://huggingface.co/neuphonic/neutts-air-q8-gguf), [Q4 GGUF](https://huggingface.co/neuphonic/neutts-air-q4-gguf) [Spaces](https://huggingface.co/spaces/neuphonic/neutts-air)
+## 📖 Overview
 
-[Demo Video](https://github.com/user-attachments/assets/020547bc-9e3e-440f-b016-ae61ca645184)
+Virtual Lab Voice Cloning is a powerful text-to-speech (TTS) application that allows you to generate natural-sounding speech from text using AI-powered voice cloning technology. The application can clone voices from audio samples and generate speech in those cloned voices, making it perfect for creating personalized voice content.
 
-_Created by [Neuphonic](http://neuphonic.com/) - building faster, smaller, on-device voice AI_
+## ✨ Key Features
 
-State-of-the-art Voice AI has been locked behind web APIs for too long. NeuTTS Air is the world’s first super-realistic, on-device, TTS speech language model with instant voice cloning. Built off a 0.5B LLM backbone, NeuTTS Air brings natural-sounding speech, real-time performance, built-in security and speaker cloning to your local device - unlocking a new category of embedded voice agents, assistants, toys, and compliance-safe apps.
+### 1. **Voice Cloning**
+   - Clone any voice from a short audio sample (5-30 seconds recommended)
+   - Automatically extracts voice characteristics from the audio
+   - Stores cloned voices for future use
+   - Supports multiple voice profiles simultaneously
 
-## Key Features
+### 2. **Text-to-Speech Generation**
+   - Convert any text into natural-sounding speech
+   - Uses cloned voices to match the original speaker's style
+   - Handles long texts by automatically splitting them into manageable chunks
+   - Preserves sentence structure and punctuation
 
-- 🗣Best-in-class realism for its size - produces natural, ultra-realistic voices that sound human
-- 📱Optimised for on-device deployment - provided in GGML format, ready to run on phones, laptops, or even Raspberry Pis
-- 👫Instant voice cloning - create your own speaker with as little as 3 seconds of audio
-- 🚄Simple LM + codec architecture built off a 0.5B backbone - the sweet spot between speed, size, and quality for real-world applications
+### 3. **Speed Control**
+   - Adjustable speech speed from 0.5x to 2.0x
+   - Real-time speed adjustment without quality loss
+   - Maintains natural voice characteristics at any speed
 
-> [!CAUTION]
-> Websites like neutts.com are popping up and they're not affliated with Neuphonic, our github or this repo.
->
-> We are on neuphonic.com only. Please be careful out there! 🙏
+### 4. **Progress Tracking**
+   - Real-time progress indicators during generation
+   - Time estimates for completion
+   - Detailed status messages
+   - Visual progress bar
 
-## Model Details
+### 5. **Voice Management**
+   - Create unlimited custom voices
+   - Delete unwanted voices
+   - Easy voice selection from dropdown menu
+   - Voice data stored locally for privacy
 
-NeuTTS Air is built off Qwen 0.5B - a lightweight yet capable language model optimised for text understanding and generation - as well as a powerful combination of technologies designed for efficiency and quality:
+### 6. **Modern Web Interface**
+   - Clean, user-friendly design
+   - Two main tabs: Generate Speech and Clone Voice
+   - Responsive layout
+   - Real-time audio playback
 
-- **Supported Languages**: English
-- **Audio Codec**: [NeuCodec](https://huggingface.co/neuphonic/neucodec) - our 50hz neural audio codec that achieves exceptional audio quality at low bitrates using a single codebook
-- **Context Window**: 2048 tokens, enough for processing ~30 seconds of audio (including prompt duration)
-- **Format**: Available in GGML format for efficient on-device inference
-- **Responsibility**: Watermarked outputs
-- **Inference Speed**: Real-time generation on mid-range devices
-- **Power Consumption**: Optimised for mobile and embedded devices
+## 🛠️ Tech Stack & Libraries
 
-## Get Started
+### Core Technologies
 
-> [!NOTE]
-> We have added a [streaming example](examples/basic_streaming_example.py) using the `llama-cpp-python` library as well as a [finetuning script](examples/finetune.py). For finetuning, please refer to the [finetune guide](TRAINING.md) for more details.
+#### **Python 3.12**
+   - The main programming language used for the entire application
 
-1. **Clone Git Repo**
+#### **PyTorch 2.8.0**
+   - Deep learning framework for running AI models
+   - Handles GPU acceleration for faster processing
+   - Manages neural network computations
 
+#### **Gradio 5.0+**
+   - Web interface framework
+   - Creates the user-friendly web UI
+   - Handles user interactions and displays
+
+### AI & Machine Learning Libraries
+
+#### **Transformers 4.56.1**
+   - Provides pre-trained language models
+   - Handles the text-to-speech backbone model
+   - Manages tokenization and text processing
+
+#### **NeuCodec (>=0.0.4)**
+   - Neural audio codec for encoding/decoding audio
+   - Converts audio to compressed format for processing
+   - Reconstructs high-quality audio from codes
+
+#### **Resemble-Perth 1.0.1**
+   - Watermarking technology
+   - Adds invisible watermarks to generated audio
+   - Helps identify AI-generated content
+
+#### **Phonemizer 3.3.0**
+   - Converts text to phonetic representation
+   - Uses eSpeak-ng for phonemization
+   - Helps the model understand pronunciation
+
+### Audio Processing Libraries
+
+#### **Librosa 0.11.0**
+   - Audio analysis and processing
+   - Handles audio file loading and manipulation
+   - Provides audio feature extraction
+
+#### **SoundFile 0.13.1**
+   - Reads and writes audio files
+   - Supports WAV format
+   - Handles audio file I/O operations
+
+#### **NumPy 2.2.6**
+   - Numerical computing library
+   - Handles array operations for audio data
+   - Performs mathematical operations on audio samples
+
+### Additional Libraries
+
+#### **TorchAO 0.13.0**
+   - PyTorch optimization library
+   - Helps optimize model performance
+   - Improves inference speed
+
+## 🏗️ How It Works
+
+### 1. **Voice Cloning Process**
+   ```
+   Audio Sample → Encoding → Voice Embedding → Storage
+   ```
+   - When you upload an audio sample, the system:
+     1. Loads the audio file
+     2. Encodes it using the neural codec
+     3. Extracts voice characteristics
+     4. Saves the voice profile for future use
+
+### 2. **Speech Generation Process**
+   ```
+   Text Input → Phonemization → Model Processing → Audio Decoding → Output
+   ```
+   - When generating speech:
+     1. Your text is converted to phonetic representation
+     2. The AI model processes it with the cloned voice reference
+     3. Audio codes are generated
+     4. Codes are decoded into audio waveform
+     5. Watermark is applied
+     6. Final audio is output
+
+### 3. **Text Chunking**
+   - Long texts are automatically split into smaller chunks
+   - Each chunk is processed separately
+   - Chunks are combined with natural pauses
+   - Maintains sentence boundaries and punctuation
+
+## 📁 Project Structure
+
+```
+neutts-air NVIDIA GPU/
+├── app.py                 # Main application file with UI and logic
+├── requirements.txt       # Python dependencies
+├── Run NeuTTS.bat         # Windows batch file to run the app
+├── neuttsair/            # Core TTS module
+│   ├── __init__.py
+│   └── neutts.py         # NeuTTSAir class implementation
+├── Models/               # AI model storage
+│   └── neutts-air/       # Pre-trained TTS model
+├── samples/              # Cloned voice storage
+│   ├── [VoiceName].txt   # Reference text for each voice
+│   ├── [VoiceName].wav   # Original audio sample
+│   └── [VoiceName].pt    # Encoded voice embedding
+└── temp_output.wav       # Temporary output file
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+1. **Python 3.12** installed
+2. **eSpeak-ng** installed (for phonemization)
+   - Download from: https://github.com/espeak-ng/espeak-ng/releases
+   - Or use the included installer: `espeak-ng (1).msi`
+3. **NVIDIA GPU** (recommended for faster processing)
+   - CUDA-compatible GPU
+   - At least 4GB VRAM (codec will use CPU if less)
+
+### Installation
+
+1. **Create Virtual Environment** (if not already created)
    ```bash
-   git clone https://github.com/neuphonic/neutts-air.git
-   cd neutts-air
+   python -m venv .venv
    ```
 
-2. **Install `espeak` (required dependency)**
+2. **Activate Virtual Environment**
+   - Windows: `.venv\Scripts\Activate.ps1`
+   - Or use the batch file: `Run NeuTTS.bat`
 
-   Please refer to the following link for instructions on how to install `espeak`:
-
-   https://github.com/espeak-ng/espeak-ng/blob/master/docs/guide.md
-
-   ```bash
-   # Mac OS
-   brew install espeak
-
-   # Ubuntu/Debian
-   sudo apt install espeak
-
-   # Windows install
-   # via chocolatey (https://community.chocolatey.org/packages?page=1&prerelease=False&moderatorQueue=False&tags=espeak)
-   choco install espeak-ng
-   # via wingit
-   winget install -e --id eSpeak-NG.eSpeak-NG
-   # via msi (need to add to path or folow the "Windows users who installed via msi" below)
-   # find the msi at https://github.com/espeak-ng/espeak-ng/releases
-   ```
-
-   Mac users may need to put the following lines at the top of the neutts.py file.
-
-   ```python
-   from phonemizer.backend.espeak.wrapper import EspeakWrapper
-   _ESPEAK_LIBRARY = '/opt/homebrew/Cellar/espeak/1.48.04_1/lib/libespeak.1.1.48.dylib'  #use the Path to the library.
-   EspeakWrapper.set_library(_ESPEAK_LIBRARY)
-   ```
-
-   Windows users who installed via msi / do not have their install on path need to run the following (see https://github.com/bootphon/phonemizer/issues/163)
-   ```pwsh
-   $env:PHONEMIZER_ESPEAK_LIBRARY = "c:\Program Files\eSpeak NG\libespeak-ng.dll"
-   $env:PHONEMIZER_ESPEAK_PATH = "c:\Program Files\eSpeak NG"
-   setx PHONEMIZER_ESPEAK_LIBRARY "c:\Program Files\eSpeak NG\libespeak-ng.dll"
-   setx PHONEMIZER_ESPEAK_PATH "c:\Program Files\eSpeak NG"
-   ```
-
-3. **Install Python dependencies**
-
-   The requirements file includes the dependencies needed to run the model with PyTorch.
-   When using an ONNX decoder or a GGML model, some dependencies (such as PyTorch) are no longer required.
-
-   The inference is compatible and tested on `python>=3.11`.
-
+3. **Install Dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **(Optional) Install Llama-cpp-python to use the `GGUF` models.**
+### Running the Application
 
+#### Option 1: Using Batch File (Windows)
+   - Double-click `Run NeuTTS.bat`
+
+#### Option 2: Using Python Directly
    ```bash
-   pip install llama-cpp-python
+   # Activate virtual environment first
+   .venv\Scripts\Activate.ps1
+   
+   # Set environment variables
+   $env:HF_HOME = "$PWD\.hf_cache"
+   $env:HUGGINGFACE_HUB_CACHE = "$PWD\.hf_cache\hub"
+   $env:PYTORCH_CUDA_ALLOC_CONF = "expandable_segments:True"
+   $env:HF_HUB_DISABLE_SYMLINKS_WARNING = "1"
+   
+   # Run the app
+   python app.py
    ```
 
-   To run llama-cpp with GPU suport (CUDA, MPS) support please refer to:
-   https://pypi.org/project/llama-cpp-python/
+The application will open in your browser at `http://localhost:7860`
 
-5. **(Optional) Install onnxruntime to use the `.onnx` decoder.**
-   If you want to run the onnxdecoder
-   ```bash
-   pip install onnxruntime
-   ```
+## 📖 Usage Guide
 
-## Running the Model
+### Cloning a Voice
 
-Run the basic example script to synthesize speech:
+1. Go to the **"🧬 Clone New Voice"** tab
+2. Enter a unique name for your voice
+3. Enter the exact text that was spoken in your audio sample
+4. Upload a WAV audio file (5-30 seconds recommended)
+5. Click **"🧬 Clone Voice"**
+6. Wait for the cloning process to complete
 
-```bash
-python -m examples.basic_example \
-  --input_text "My name is Dave, and um, I'm from London" \
-  --ref_audio samples/dave.wav \
-  --ref_text samples/dave.txt
-```
+**Tips for Best Results:**
+- Use clear, high-quality audio recordings
+- Ensure reference text matches what's spoken exactly
+- Speak naturally and clearly
+- Avoid background noise
+- 5-30 seconds of audio works best
 
-To specify a particular model repo for the backbone or codec, add the `--backbone` argument. Available backbones are listed in [NeuTTS-Air huggingface collection](https://huggingface.co/collections/neuphonic/neutts-air-68cc14b7033b4c56197ef350).
+### Generating Speech
 
-Several examples are available, including a Jupyter notebook in the `examples` folder.
+1. Go to the **"🎯 Generate Speech"** tab
+2. Enter or paste the text you want to convert
+3. Select a cloned voice from the dropdown
+4. Adjust the speed slider if needed (1.0 = normal speed)
+5. Click **"🎙️ Generate Speech"**
+6. Wait for processing (progress bar shows status)
+7. Listen to the generated audio
 
-### One-Code Block Usage
+**Features:**
+- Handles long texts automatically
+- Shows real-time progress
+- Displays time estimates
+- Auto-plays generated audio
 
-```python
-from neuttsair.neutts import NeuTTSAir
-import soundfile as sf
+### Managing Voices
 
-tts = NeuTTSAir(
-   backbone_repo="neuphonic/neutts-air", # or 'neutts-air-q4-gguf' with llama-cpp-python installed
-   backbone_device="cpu",
-   codec_repo="neuphonic/neucodec",
-   codec_device="cpu"
-)
-input_text = "My name is Dave, and um, I'm from London."
+- **Select Voice**: Use the dropdown menu to choose a voice
+- **Delete Voice**: Click the 🗑️ button next to the voice selector
+- **Create New Voice**: Use the Clone Voice tab to add more voices
 
-ref_text = "samples/dave.txt"
-ref_audio_path = "samples/dave.wav"
+## ⚙️ Technical Details
 
-ref_text = open(ref_text, "r").read().strip()
-ref_codes = tts.encode_reference(ref_audio_path)
+### Model Architecture
 
-wav = tts.infer(input_text, ref_codes, ref_text)
-sf.write("test.wav", wav, 24000)
-```
+- **Backbone Model**: NeuTTS-Air (transformer-based language model)
+- **Codec**: NeuCodec (neural audio codec)
+- **Watermarking**: PerthNet (implicit watermarking)
 
-### Streaming
+### Processing Pipeline
 
-Speech can also be synthesised in _streaming mode_, where audio is generated in chunks and plays as generated. Note that this requires pyaudio to be installed. To do this, run: 
+1. **Text Input** → Phonemization (text to phonemes)
+2. **Phonemes + Voice Reference** → AI Model Processing
+3. **Model Output** → Audio Code Generation
+4. **Audio Codes** → Decoding to Waveform
+5. **Waveform** → Watermarking
+6. **Final Audio** → Output
 
-```bash
-python -m examples.basic_streaming_example \
-  --input_text "My name is Dave, and um, I'm from London" \
-  --ref_codes samples/dave.pt \
-  --ref_text samples/dave.txt
-```
+### Memory Management
 
-Again, a particular model repo can be specified with the `--backbone` argument - note that for streaming the model must be in GGUF format.
+- Automatically detects GPU memory
+- For GPUs with ≤4.5GB VRAM, codec runs on CPU
+- Clears CUDA cache before and after model loading
+- Optimized for efficient memory usage
 
-## Preparing References for Cloning
+### Audio Specifications
 
-NeuTTS Air requires two inputs:
+- **Sample Rate**: 24,000 Hz
+- **Format**: WAV (PCM)
+- **Chunk Processing**: Automatic splitting for long texts
+- **Silence Between Chunks**: 0.25 seconds
 
-1. A reference audio sample (`.wav` file)
-2. A text string
+## 🔧 Configuration
 
-The model then synthesises the text as speech in the style of the reference audio. This is what enables NeuTTS Air’s instant voice cloning capability.
+### Environment Variables
 
-### Example Reference Files
+The application uses these environment variables:
 
-You can find some ready-to-use samples in the `examples` folder:
+- `HF_HOME`: Hugging Face cache directory
+- `HUGGINGFACE_HUB_CACHE`: Model cache location
+- `PYTORCH_CUDA_ALLOC_CONF`: CUDA memory allocation settings
+- `HF_HUB_DISABLE_SYMLINKS_WARNING`: Disables symlink warnings
+- `PHONEMIZER_ESPEAK_LIBRARY`: Path to eSpeak library
 
-- `samples/dave.wav`
-- `samples/jo.wav`
+### Model Settings
 
-### Guidelines for Best Results
+- **Backbone Device**: CUDA (GPU) by default
+- **Codec Device**: CUDA for GPUs >4.5GB, CPU otherwise
+- **Max Context**: 2048 tokens
+- **Temperature**: 1.0 (for generation)
+- **Top-k**: 50 (for generation)
 
-For optimal performance, reference audio samples should be:
+## 🐛 Troubleshooting
 
-1. **Mono channel**
-2. **16-44 kHz sample rate**
-3. **3–15 seconds in length**
-4. **Saved as a `.wav` file**
-5. **Clean** — minimal to no background noise
-6. **Natural, continuous speech** — like a monologue or conversation, with few pauses, so the model can capture tone effectively
+### Common Issues
 
-## Guidelines for minimizing Latency
+1. **eSpeak not found**
+   - Install eSpeak-ng from the releases page
+   - Or run the included installer
 
-For optimal performance on-device:
+2. **Out of Memory Errors**
+   - The app automatically uses CPU for codec on low-memory GPUs
+   - Close other applications to free GPU memory
 
-1. Use the GGUF model backbones
-2. Pre-encode references
-3. Use the [onnx codec decoder](https://huggingface.co/neuphonic/neucodec-onnx-decoder)
+3. **Slow Processing**
+   - Ensure GPU is being used (check console output)
+   - Reduce text length for faster processing
+   - Lower-end GPUs may take longer
 
-Take a look at this example [examples README](examples/README.md###minimal-latency-example) to get started.
+4. **Audio Quality Issues**
+   - Use high-quality reference audio
+   - Ensure reference text matches audio exactly
+   - Try different audio samples
 
-## Responsibility
+## 📝 File Formats
 
-Every audio file generated by NeuTTS Air includes [Perth (Perceptual Threshold) Watermarker](https://github.com/resemble-ai/perth).
+### Supported Input Formats
+- **Text**: Plain text input
+- **Audio**: WAV format for voice cloning
 
-## Disclaimer
+### Output Format
+- **Audio**: WAV format, 24kHz sample rate
+- **Temporary files**: Stored as `temp_output.wav`
 
-Don't use this model to do bad things… please.
+## 🔒 Privacy & Security
 
-## Developer Requirements
+- All voice data is stored locally
+- No data is sent to external servers
+- Voice embeddings stored in `.pt` files
+- Audio samples stored in `samples/` directory
+- Models cached locally in `Models/` directory
 
-To run the pre commit hooks to contribute to this project run:
+## 📚 Additional Resources
 
-```bash
-pip install pre-commit
-```
+- **NeuTTS-Air Model**: https://huggingface.co/neuphonic/neutts-air
+- **NeuCodec**: https://huggingface.co/neuphonic/neucodec
+- **eSpeak-ng**: https://github.com/espeak-ng/espeak-ng
 
-Then:
+## 🎯 Use Cases
 
-```bash
-pre-commit install
-```
+- **Content Creation**: Generate voiceovers for videos
+- **Accessibility**: Text-to-speech for accessibility needs
+- **Personalization**: Create custom voice assistants
+- **Education**: Language learning and pronunciation
+- **Entertainment**: Voice cloning for creative projects
+
+## 📄 License
+
+This project uses various open-source libraries. Please refer to individual library licenses for details.
+
+## 🤝 Support
+
+For issues or questions:
+1. Check the troubleshooting section
+2. Review console output for error messages
+3. Ensure all dependencies are installed correctly
+4. Verify eSpeak-ng is properly installed
+
+---
+
+**Version**: 2.0  
+**Last Updated**: 2025  
+**Platform**: Windows (NVIDIA GPU)
+

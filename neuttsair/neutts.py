@@ -105,14 +105,37 @@ class NeuTTSAir:
             self._is_quantized_model = True
 
         else:
-            self.tokenizer = AutoTokenizer.from_pretrained(backbone_repo)
-            self.backbone = AutoModelForCausalLM.from_pretrained(backbone_repo).to(
-                torch.device(backbone_device)
-            )
+            # If backbone_repo is a local directory, prefer local files only
+            local_only = False
+            try:
+                import os
+                local_only = os.path.isdir(backbone_repo)
+            except Exception:
+                local_only = False
+
+            # Pass local_files_only to avoid network access when using a local model
+            self.tokenizer = AutoTokenizer.from_pretrained(backbone_repo, local_files_only=local_only)
+            self.backbone = AutoModelForCausalLM.from_pretrained(
+                backbone_repo, local_files_only=local_only
+            ).to(torch.device(backbone_device))
 
     def _load_codec(self, codec_repo, codec_device):
+        import os
 
         print(f"Loading codec from: {codec_repo} on {codec_device} ...")
+
+        # ✅ Allow local directory override
+        if os.path.isdir(codec_repo):
+            print(f"Detected local codec directory: {codec_repo}")
+            try:
+                self.codec = NeuCodec.from_pretrained(codec_repo, local_files_only=True)
+                self.codec.eval().to(codec_device)
+                return
+            except Exception as e:
+                print(f"Failed to load local codec from {codec_repo}: {e}")
+                print("Falling back to default remote codec...")
+                codec_repo = "neuphonic/neucodec"
+
         match codec_repo:
             case "neuphonic/neucodec":
                 self.codec = NeuCodec.from_pretrained(codec_repo)
@@ -121,7 +144,6 @@ class NeuTTSAir:
                 self.codec = DistillNeuCodec.from_pretrained(codec_repo)
                 self.codec.eval().to(codec_device)
             case "neuphonic/neucodec-onnx-decoder":
-
                 if codec_device != "cpu":
                     raise ValueError("Onnx decoder only currently runs on CPU.")
 
@@ -129,19 +151,19 @@ class NeuTTSAir:
                     from neucodec import NeuCodecOnnxDecoder
                 except ImportError as e:
                     raise ImportError(
-                        "Failed to import the onnx decoder."
-                        " Ensure you have onnxruntime installed as well as neucodec >= 0.0.4."
+                        "Failed to import the onnx decoder. "
+                        "Ensure you have onnxruntime installed as well as neucodec >= 0.0.4."
                     ) from e
 
                 self.codec = NeuCodecOnnxDecoder.from_pretrained(codec_repo)
                 self._is_onnx_codec = True
-
             case _:
                 raise ValueError(
-                    "Invalid codec repo! Must be one of:"
-                    " 'neuphonic/neucodec', 'neuphonic/distill-neucodec',"
-                    " 'neuphonic/neucodec-onnx-decoder'."
+                    "Invalid codec repo! Must be one of: "
+                    "'neuphonic/neucodec', 'neuphonic/distill-neucodec', "
+                    "'neuphonic/neucodec-onnx-decoder', or a valid local directory path."
                 )
+
 
     def infer(self, text: str, ref_codes: np.ndarray | torch.Tensor, ref_text: str) -> np.ndarray:
         """
